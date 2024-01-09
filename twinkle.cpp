@@ -68,6 +68,11 @@ void reset()
 #endif
 }
 
+void clear()
+{
+	printf("\e[1;1H\e[2J");
+}
+
 int getch()
 {
 #ifdef _WIN32

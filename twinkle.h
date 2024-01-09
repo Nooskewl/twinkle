@@ -21,6 +21,7 @@ enum TWINKLE_COLOR {
 void start();
 void set(TWINKLE_COLOR fore, bool f_bright, TWINKLE_COLOR back, bool b_bright);
 void reset();
+void clear();
 
 int getch();
 
