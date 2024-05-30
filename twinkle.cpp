@@ -70,7 +70,23 @@ void reset()
 
 void clear()
 {
+#ifdef _WIN32
+	COORD topleft = { 0, 0 };
+	CONSOLE_SCREEN_BUFFER_INFO screen;
+	DWORD written;
+
+	GetConsoleScreenBufferInfo(console, &screen);
+	FillConsoleOutputCharacterA(
+		console, ' ', screen.dwSize.X * screen.dwSize.Y, topleft, &written
+	);
+	FillConsoleOutputAttribute(
+		console, FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE,
+		screen.dwSize.X * screen.dwSize.Y, topleft, &written
+	);
+	SetConsoleCursorPosition(console, topleft);
+#else
 	printf("\e[1;1H\e[2J");
+#endif
 }
 
 int getch()
