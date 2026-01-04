@@ -8,6 +8,40 @@ static HANDLE console;
 #endif
 #include "twinkle.h"
 
+#ifdef _WIN32
+int win_fore[8] = {
+	0,
+	FOREGROUND_BLUE,
+	FOREGROUND_GREEN,
+	FOREGROUND_BLUE | FOREGROUND_GREEN,
+	FOREGROUND_RED,
+	FOREGROUND_BLUE | FOREGROUND_RED,
+	FOREGROUND_RED | FOREGROUND_GREEN,
+	FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_GREEN
+};
+int win_back[8] = {
+	0,
+	BACKGROUND_BLUE,
+	BACKGROUND_GREEN,
+	BACKGROUND_BLUE | BACKGROUND_GREEN,
+	BACKGROUND_RED,
+	BACKGROUND_BLUE | BACKGROUND_RED,
+	BACKGROUND_RED | BACKGROUND_GREEN,
+	BACKGROUND_RED | BACKGROUND_BLUE | BACKGROUND_GREEN
+};
+#else
+int linux_colours[8] = {
+	0,
+	4,
+	2,
+	6,
+	1,
+	5,
+	3,
+	7
+};
+#endif
+
 namespace twinkle {
 
 void start()
@@ -17,44 +51,50 @@ void start()
 #endif
 }
 
-void set(TWINKLE_COLOR fore, bool f_bright, TWINKLE_COLOR back, bool b_bright)
+void set_fore(TWINKLE_COLOR colour, bool bright)
 {
 #ifdef _WIN32
-	int c = (int)fore;
-	if (f_bright) {
-		c += 8;
+	CONSOLE_SCREEN_BUFFER_INFO bi;
+	GetConsoleScreenBufferInfo(console, &bi);
+
+	int c = win_fore[colour];
+	if (bright) {
+		c |= FOREGROUND_INTENSITY;
 	}
-	int b = (int)back;
-	b *= 16;
-	c += b;
-	if (b_bright) {
-		c |= BACKGROUND_INTENSITY;
-	}
+
+	c |= bi.wAttributes & (BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+
 	SetConsoleTextAttribute(console, c);
 #else
-	int c[8] = {
-		0,
-		4,
-		2,
-		6,
-		1,
-		5,
-		3,
-		7
-	};
-
-	if (f_bright) {
-		printf("\x1b[3%d;1m", c[fore]);
+	if (bright) {
+		printf("\x1b[3%d;1m", linux_colours[colour]);
 	}
 	else {
-		printf("\x1b[3%dm", c[fore]);
+		printf("\x1b[3%dm", linux_colours[colour]);
+	}
+#endif
+}
+
+void set_back(TWINKLE_COLOR colour, bool bright)
+{
+#ifdef _WIN32
+	CONSOLE_SCREEN_BUFFER_INFO bi;
+	GetConsoleScreenBufferInfo(console, &bi);
+
+	int c = win_back[colour];
+	if (bright) {
+		c |= BACKGROUND_INTENSITY;
 	}
 
-	if (b_bright) {
-		printf("\x1b[48;5;%dm", c[back]+8);
+	c |= bi.wAttributes & (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY);
+
+	SetConsoleTextAttribute(console, c);
+#else
+	if (bright) {
+		printf("\x1b[48;5;%dm", linux_colours[colour]+8);
 	}
 	else {
-		printf("\x1b[4%dm", c[back]);
+		printf("\x1b[4%dm", linux_colours[colour]);
 	}
 #endif
 }
