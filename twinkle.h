@@ -25,6 +25,7 @@ void reset();
 void clear();
 
 int getch();
+int kbhit();
 
 }
 

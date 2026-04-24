@@ -146,4 +146,9 @@ int getch()
 #endif
 }
 
+int kbhit()
+{
+	return _kbhit();
+}
+
 }
