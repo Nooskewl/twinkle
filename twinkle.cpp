@@ -132,7 +132,7 @@ void clear()
 int getch()
 {
 #ifdef _WIN32
-	return ::getch();
+	return _getch();
 #else
 	struct termios old, current;
 	tcgetattr(0, &old);
