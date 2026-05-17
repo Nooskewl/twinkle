@@ -27,6 +27,10 @@ void clear();
 int getch();
 int kbhit();
 
+void set_cursor_pos(int x, int y);
+
+void get_console_size(int *w, int *h);
+
 }
 
 #endif // TWINKLE_H

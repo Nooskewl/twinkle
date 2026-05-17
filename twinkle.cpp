@@ -151,4 +151,20 @@ int kbhit()
 	return _kbhit();
 }
 
+void set_cursor_pos(int x, int y)
+{
+	COORD pos;
+	pos.X = x;
+	pos.Y = y;
+	SetConsoleCursorPosition(console, pos);
+}
+
+void get_console_size(int *w, int *h)
+{
+	CONSOLE_SCREEN_BUFFER_INFO bi;
+	GetConsoleScreenBufferInfo(console, &bi);
+	*w = bi.dwSize.X;
+	*h = bi.dwSize.Y;
+}
+
 }
